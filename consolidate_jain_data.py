@@ -6,12 +6,28 @@
 # Jan 31;114(5):944-949. doi: 10.1073/pnas.1616408114. Epub 2017 Jan 17. PMID: 28096333; PMCID: PMC5293111.
 
 import pandas as pd
+from datasets import Dataset, DatasetDict, load_dataset
 
 # Read csv
 df = pd.read_csv("jain_2017.csv")
 
 # Rename sequence columns
-df_for_json = df.rename(columns={'VH': 'PROT_fastaH_raw', 'VL': 'PROT_fastaL_raw'})
+df_prepared = df.rename(columns={'VH': 'PROT_fastaH_raw', 'VL': 'PROT_fastaL_raw'})
 
-# Create json format
-df_for_json.to_json('consolidated_data_jain_2017.json', orient='records', indent=4)
+# Instatiate huggingface Dataset
+hf_dataset = Dataset.from_pandas(df_prepared)
+hf_dataset_dict = DatasetDict({'train': hf_dataset})
+print("")
+print(hf_dataset_dict)
+
+# Push Dataset to huggingface
+repo_name = "GalvanizedHeart/jain-2017"
+print(f"Pushing dataset to the Hub at repository: {repo_name}")
+hf_dataset_dict.push_to_hub(repo_name)
+
+print("Uploaded Jain Dataset")
+
+# Pull Dataset from hugginface
+pulled_dataset = load_dataset(repo_name)
+print(f"Test: Pulling dataset from the Hub at repository: {repo_name}")
+print(pulled_dataset)
