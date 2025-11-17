@@ -9,19 +9,16 @@ import pandas as pd
 from datasets import Dataset, DatasetDict, load_dataset
 
 # Read csv
-df = pd.read_csv("jain_2017.csv")
-
-# Rename sequence columns
-df_prepared = df.rename(columns={'VH': 'PROT_fastaH_raw', 'VL': 'PROT_fastaL_raw'})
+df = pd.read_csv("Private_Jain2017_ELISA_indiv.csv", index_col=False)
 
 # Instatiate huggingface Dataset
-hf_dataset = Dataset.from_pandas(df_prepared)
+hf_dataset = Dataset.from_pandas(df)
 hf_dataset_dict = DatasetDict({'train': hf_dataset})
 print("")
 print(hf_dataset_dict)
 
 # Push Dataset to huggingface
-repo_name = "GalvanizedHeart/jain-2017"
+repo_name = "hugging-science/antibody-dev-jain-2017"
 print(f"Pushing dataset to the Hub at repository: {repo_name}")
 hf_dataset_dict.push_to_hub(repo_name)
 
